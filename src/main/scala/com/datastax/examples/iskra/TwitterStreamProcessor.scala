@@ -15,8 +15,8 @@ object TwitterStreamProcessor
 {
   val keyspace = "iskra"
   val table = "hashtags_by_interval"
-  val columns = Seq("hashtag", "count", "interval")
-  val tags = Seq("iphone", "android", "gameinsight")
+  val columns = Seq("hashtag", "mentions", "interval")
+  val tags = Seq("iphone", "android")
 
   def start(master: String = "spark://127.0.0.1:7077", cassandraIp: String = "127.0.0.1")
   {
@@ -35,22 +35,26 @@ object TwitterStreamProcessor
       createStream(ssc, None, Nil, storageLevel = StorageLevel.MEMORY_ONLY_SER_2)
       //.repartition(3)
 
-    val hashTags = stream.flatMap(status =>
-      status.getText.toLowerCase.split(" ").transform(_.stripPrefix("#")).filter(tags.contains(_)))
+    val hashTags = stream.flatMap(tweet =>
+      tweet.getText.toLowerCase.split(" ").transform(_.stripPrefix("#")).filter(tags.contains(_)))
 
     //val tagCounts = hashTags.map((_, 1)).reduceByKey(_ + _)
 
+    val tagCountsByMinute = hashTags.map((_, 1)).reduceByKey(_ + _)
+      .map{case (hashtag, mentions) => (hashtag, mentions, "M" + DateTime.now.toString("yyyyMMddHHmm"))}
+
     val tagCountsByHour = hashTags.map((_, 1)).reduceByKey(_ + _)
-      .map{case (hashtag, count) => (hashtag, count, "H" + DateTime.now.toString("yyyyMMddHH"))}
+      .map{case (hashtag, mentions) => (hashtag, mentions, "H" + DateTime.now.toString("yyyyMMddHH"))}
 
     val tagCountsByDay  = hashTags.map((_, 1)).reduceByKey(_ + _)
-      .map{case (hashtag, count) => (hashtag, count, "D" + DateTime.now.toString("yyyyMMdd"))}
+      .map{case (hashtag, mentions) => (hashtag, mentions, "D" + DateTime.now.toString("yyyyMMdd"))}
 
     val tagCountsAll    = hashTags.map((_, 1)).reduceByKey(_ + _)
-      .map{case (hashtag, count) => (hashtag, count, "ALL")}
+      .map{case (hashtag, mentions) => (hashtag, mentions, "ALL")}
 
     //tagCountsByHour.print()
 
+    tagCountsByMinute.saveToCassandra(keyspace, table, columns)
     tagCountsByHour.saveToCassandra(keyspace, table, columns)
     tagCountsByDay.saveToCassandra(keyspace, table, columns)
     tagCountsAll.saveToCassandra(keyspace, table, columns)

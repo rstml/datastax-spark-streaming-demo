@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Counter</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Doppio+One' rel='stylesheet' type='text/css'>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style>
+        body {
+        font-family: 'Doppio One', sans-serif;
+        font-size:80pt;
+        background-color:rgb(189,91,12);
+        color:#fff;
+        }
+    </style>
+</head>
+<body>
+<div align="center" style="margin-top:100px">
+    <table>
+        <tr>
+            <td align="center">
+                <div id="iphone-count">0</div>
+            </td>
+            <td style="padding:0 110px"><i class="fa fa-twitter"></i></td>
+            <td align="center">
+                <div id="android-count">0</div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                <div>iPhone</div>
+            </td>
+            <td style="padding:0 110px">&nbsp;</td>
+            <td>
+                <div>Android</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+setInterval(function() {
+  $.getJSON("total", function(data) {
+    $.each(data, function(key, val) {
+      $.each(val, function(os, mentions) {
+        $("#"+os+"-count").text(mentions.toString());
+      });
+    });
+  });
+}, 2000);
+</script>
+
+</body>
+</html>

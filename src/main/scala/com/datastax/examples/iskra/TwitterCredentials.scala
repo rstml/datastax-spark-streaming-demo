@@ -5,10 +5,10 @@ package com.datastax.examples.iskra
  */
 object TwitterCredentials
 {
-  val consumerKey = "keykeykey"
-  val consumerSecret = "keykeykey"
-  val accessToken = "keykeykey-keykeykey"
-  val accessTokenSecret = "keykeykey"
+  val consumerKey = "GSaQfKdRp6ptOnUfhiehmk8dF"
+  val consumerSecret = "aUQSmntJ77kZBh36kLB1mMR0VvkZqsJamkndPV0NdB6zA1blZF"
+  val accessToken = "46770301-LwFIC8RNtWf10Z1s4pnyFev4qnIU21UKlvP2RzJ6Y"
+  val accessTokenSecret = "pXponW9TWnh6STyUCRVoCnzhhjJwM1QtuDhjdF6L1NLnh"
 
   def setCredentials(): Unit =
   {
