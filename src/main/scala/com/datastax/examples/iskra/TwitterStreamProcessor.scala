@@ -7,6 +7,8 @@ import org.apache.spark.streaming.StreamingContext._
 import org.apache.spark.streaming.twitter._
 import com.datastax.spark.connector.streaming._
 import com.github.nscala_time.time.Imports._
+import twitter4j.auth.OAuthAuthorization
+import twitter4j.conf.ConfigurationBuilder
 
 /**
  * Created by rustam on 13/09/2014.
@@ -25,14 +27,14 @@ object TwitterStreamProcessor
       .setAppName("Twitter-Demo")
       .setJars(Array(System.getProperty("user.dir") + "/target/scala-2.10/iskra-assembly-1.0.jar"))
       .set("spark.executor.memory", "1g")
-      .set("spark.cores.max", "6")
+      .set("spark.cores.max", "1")
       .set("spark.cassandra.connection.host", cassandraIp)
 //      .set("spark.cleaner.ttl", "3600")
 
     val ssc = new StreamingContext(sc, Seconds(5))
 
     val stream = TwitterUtils.
-      createStream(ssc, None, Nil, storageLevel = StorageLevel.MEMORY_ONLY_SER_2)
+      createStream(ssc, None, Nil, StorageLevel.MEMORY_ONLY_SER_2)
       //.repartition(3)
 
     val hashTags = stream.flatMap(tweet =>
@@ -52,7 +54,7 @@ object TwitterStreamProcessor
     val tagCountsAll    = hashTags.map((_, 1)).reduceByKey(_ + _)
       .map{case (hashtag, mentions) => (hashtag, mentions, "ALL")}
 
-    //tagCountsByHour.print()
+//    tagCountsByHour.print()
 
     tagCountsByMinute.saveToCassandra(keyspace, table, columns)
     tagCountsByHour.saveToCassandra(keyspace, table, columns)

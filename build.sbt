@@ -10,13 +10,15 @@ organization := "com.datastax.examples"
 
 resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
 
-libraryDependencies += "org.apache.spark" % "spark-core_2.10" % "0.9.1" % "provided"
+libraryDependencies += "org.apache.spark" % "spark-core_2.10" % "1.1.0" % "provided"
 
-libraryDependencies += "org.apache.spark" % "spark-streaming_2.10" % "0.9.1" % "provided"
+libraryDependencies += "org.apache.spark" % "spark-streaming_2.10" % "1.1.0" % "provided"
 
-libraryDependencies += "org.apache.spark" % "spark-streaming-twitter_2.10" % "0.9.1" % "provided"
+libraryDependencies += "org.apache.spark" % "spark-sql_2.10" % "1.1.0" % "provided"
 
-libraryDependencies += "com.datastax.spark" %% "spark-cassandra-connector" % "1.0.0-rc4" % "provided" withSources() withJavadoc()
+libraryDependencies += "org.apache.spark" % "spark-streaming-twitter_2.10" % "1.1.0" % "provided"
+
+libraryDependencies += "com.datastax.spark" %% "spark-cassandra-connector" % "1.1.0-alpha2" % "provided" withSources() withJavadoc()
 
 libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "1.4.0"
 
