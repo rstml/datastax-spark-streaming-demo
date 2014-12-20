@@ -12,7 +12,8 @@ class PersistStreamByInterval extends Serializable {
 
   def start(ssc: StreamingContext, filters: Regex, keyspace: String, table: String): Unit = {
 
-    val stream = ssc.receiverStream[String](new WebSocketReceiver("ws://stream.meetup.com/2/rsvps", StorageLevel.MEMORY_ONLY_SER))
+    val stream = ssc.receiverStream[String](new WebSocketReceiver("ws://stream.meetup.com/2/rsvps", StorageLevel.MEMORY_ONLY_SER_2))
+//    stream.repartition(5)
     stream.print()
 
 //    val transform = (cruft: String) => filters.findAllIn(cruft).flatMap(_.stripPrefix("#"))
