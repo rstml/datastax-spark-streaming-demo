@@ -44,6 +44,7 @@ object StreamingApp {
   val ssc = new StreamingContext(sc, Seconds(StreamingBatchInterval))
 
   def main(args: Array[String]): Unit = {
+    //ssc.checkpoint("iskra.dat")
     val stream = new PersistStreamByInterval
     stream.start(ssc, RegexFilterPattern, CassandraKeyspace, CassandraTable)
   }

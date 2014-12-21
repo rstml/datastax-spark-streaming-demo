@@ -94,7 +94,7 @@ object Versions {
   val JDK            = "1.7"
   val Scala          = "2.10.4"
   val Slf4j          = "1.7.5"
-  val Spark          = "1.1.1"// resolves compile issue
+  val Spark          = "1.1.0"
   val SparkCassandra = "1.1.0"
 }
 
