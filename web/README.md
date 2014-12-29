@@ -3,7 +3,7 @@
 ## Build & Run ##
 
 ```sh
-$ cd Iskra_Web
+$ cd web
 $ ./sbt
 > container:start
 > browse

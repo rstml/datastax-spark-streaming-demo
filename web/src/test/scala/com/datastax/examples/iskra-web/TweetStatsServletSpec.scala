@@ -1,4 +1,4 @@
-package com.datastax.examples.iskra-web
+package com.datastax.examples.iskra
 
 import org.scalatra.test.specs2._
 
@@ -8,7 +8,7 @@ class TweetStatsServletSpec extends ScalatraSpec { def is =
     "should return status 200"                  ! root200^
                                                 end
 
-  addServlet(classOf[TweetStatsServlet], "/*")
+  addServlet(classOf[EventStatsServlet], "/*")
 
   def root200 = get("/") {
     status must_== 200

@@ -1,6 +1,5 @@
 package com.datastax.examples.iskra
 
-import scala.util.matching.Regex
 import scala.sys.process._
 import akka.japi.Util.immutableSeq
 import com.typesafe.config.ConfigFactory
@@ -9,12 +8,7 @@ final class StreamingSettings {
 
   protected val config = ConfigFactory.load.getConfig("streaming-app")
 
-  /** For purposes of live demos #term or term is configurable, as #term may be less frequent. */
-  val RegexFilterPattern: Regex = {
-    val filters = immutableSeq(config.getStringList("filters")).toSet
-    val topics = filters.map(_.stripPrefix("#")).mkString("|")
-    if (filters.mkString contains "#")  s"(#\\w*(?:$topics)\\w*)".r else s"(w*(?:$topics)w*)".r
-  }
+  val MeetupRSVPWebSocketUrl = config.getString("meetup.ws.url")
 
   /** Attempts to detect System property, falls back to config. */
   // Detect Spark Master and Cassandra entry point using dsetool

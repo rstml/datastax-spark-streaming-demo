@@ -15,14 +15,15 @@ import org.apache.spark.{SparkConf, SparkContext}
  * 
  * You should output sequences similar to:
  * {{{
- *     hashtag      | interval             | mentions
- *    --------------+----------------------+----------
- *           iphone | 2014110419:54:35.000 |        2
- *           iphone | 2014110419:54:10.000 |        1
- *          android | 2014110419:55:10.000 |        4
- *          android | 2014110419:55:05.000 |        1
- *      iphonegames | 2014110419:54:35.000 |        1
- *     androidgames | 2014110419:55:10.000 |        3
+ *  event     | interval | dimension | subtotal
+ * -----------+----------+-----------+---------
+ *  attending |      ALL |        ae |       1
+ *  attending |      ALL |        au |      51
+ *  attending |      ALL |        ca |      52
+ *  attending |      ALL |        de |       2
+ *  attending |      ALL |        es |       6
+ *  attending |      ALL |        gb |      37
+ *  attending |      ALL |        us |     941
  * }}}
  */
 object StreamingApp {
@@ -46,7 +47,7 @@ object StreamingApp {
   def main(args: Array[String]): Unit = {
     //ssc.checkpoint("iskra.dat")
     val stream = new PersistStreamByInterval
-    stream.start(ssc, RegexFilterPattern, CassandraKeyspace, CassandraTable)
+    stream.start(ssc, MeetupRSVPWebSocketUrl, CassandraKeyspace, CassandraTable)
   }
 
   /** Creates the keyspace and table schema. */
@@ -56,11 +57,12 @@ object StreamingApp {
       session.execute(s"CREATE KEYSPACE IF NOT EXISTS $CassandraKeyspace WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1 }")
       session.execute(s"""
              CREATE TABLE IF NOT EXISTS $CassandraKeyspace.$CassandraTable (
-                hashtag text,
+                event text,
                 interval text,
-                mentions counter,
-                PRIMARY KEY(hashtag, interval)
-            ) WITH CLUSTERING ORDER BY (interval DESC)
+                dimension text,
+                subtotal counter,
+                PRIMARY KEY(event, interval, dimension)
+            ) WITH CLUSTERING ORDER BY (interval DESC, dimension ASC)
            """)
     }
   }

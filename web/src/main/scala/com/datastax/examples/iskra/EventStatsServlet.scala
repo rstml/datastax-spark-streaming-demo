@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 
-class TweetStatsServlet() extends ScalatraServlet with CorsSupport with JacksonJsonSupport with ScalateSupport
+class EventStatsServlet() extends ScalatraServlet with CorsSupport with JacksonJsonSupport with ScalateSupport
 {
   protected implicit val jsonFormats: Formats = DefaultFormats
 
@@ -21,10 +21,10 @@ class TweetStatsServlet() extends ScalatraServlet with CorsSupport with JacksonJ
     response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
   }
 
-  get("/") {
+  get("/events") {
     val hashtagStats = for {
-      iphone <- Hashtag.hourly("iphone")
-      android <- Hashtag.hourly("android")
+      iphone <- Event.hourly("iphone")
+      android <- Event.hourly("android")
     } yield (iphone, android)
 
     val stats = Await.result(hashtagStats, 5 seconds)
@@ -35,12 +35,14 @@ class TweetStatsServlet() extends ScalatraServlet with CorsSupport with JacksonJ
     )
   }
 
-  get("/total") {
-    val hashtagStats = Hashtag.totals(List("iphone","android"))
-    Await.result(hashtagStats, 5 seconds)
+  get("/countries") {
+    val attendeesByCountry = Event.dimensions("attending", "ALL")
+
+    Await.result(attendeesByCountry, 5 seconds)
+      .map{ case (a,b) => Map("code" -> a.toUpperCase, "value" -> b)}
   }
 
-  get("/dashboard") {
+  get("/") {
     contentType="text/html"
     layoutTemplate("dashboard.ssp")
   }

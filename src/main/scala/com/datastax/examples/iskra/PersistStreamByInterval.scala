@@ -2,21 +2,29 @@ package com.datastax.examples.iskra
 
 import com.datastax.examples.iskra.model.MeetupRsvp
 import com.datastax.examples.iskra.websocket._
+import com.datastax.spark.connector._
+import com.datastax.spark.connector.streaming._
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.{Seconds, StreamingContext, Time}
+import org.apache.spark.streaming.StreamingContext._
 import org.joda.time.{DateTime, DateTimeZone}
-
-import scala.util.matching.Regex
 
 class PersistStreamByInterval extends Serializable {
 
-  def start(ssc: StreamingContext, filters: Regex, keyspace: String, table: String): Unit = {
+  def start(ssc: StreamingContext, websocket: String, keyspace: String, table: String) {
 
-    val stream = ssc.receiverStream[MeetupRsvp](new WebSocketReceiver("ws://stream.meetup.com/2/rsvps", StorageLevel.MEMORY_ONLY_SER))
+    val stream = ssc.receiverStream[MeetupRsvp](new WebSocketReceiver(websocket, StorageLevel.MEMORY_ONLY_SER))
 //    stream.checkpoint(Seconds(60))
 //    stream.repartition(2)
-    val rsvp = stream.map(rsvp => rsvp.group.group_country)
-    rsvp.print()
+
+    val rsvpByCountry = stream
+      .filter(_.response == "yes")
+      .map( rsvp => (rsvp.group.group_country, rsvp.guests + 1) )
+      .reduceByKey(_ + _)
+      .map { case (country, attendees) => ("attending", "ALL", country, attendees) }
+
+    //rsvpByCountry.print()
+    rsvpByCountry.saveToCassandra(keyspace, table, SomeColumns("event", "interval", "dimension", "subtotal"))
 
 //    val transform = (cruft: String) => filters.findAllIn(cruft).flatMap(_.stripPrefix("#"))
 //

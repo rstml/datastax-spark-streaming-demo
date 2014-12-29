@@ -3,54 +3,135 @@
 <head>
     <meta charset="utf-8">
     <title>Counter</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="http://code.highcharts.com/maps/modules/data.js"></script>
+    <script src="http://code.highcharts.com/mapdata/custom/world.js"></script>
+    <script type="text/javascript" src="http://meetup.github.io/stream/components/must/must.js"></script>
+
     <link href='http://fonts.googleapis.com/css?family=Doppio+One' rel='stylesheet' type='text/css'>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
     <style>
         body {
-        font-family: 'Doppio One', sans-serif;
-        font-size:80pt;
-        background-color:rgb(189,91,12);
-        color:#fff;
+            font-family: 'Doppio One', sans-serif;
+            font-size:16pt;
+            color:#000;
+            margin:0;
+            height: 100%;
+        }
+        .person {
+            font-size:12pt;
+            color:#dcdcdc;
+            margin-bottom:10px;
+        }
+        #map {
+            height: 800px; min-width: 700px; max-width: 1000px; margin: 0 auto;
+        }
+        .page {
+            float:left;
+            height:100%;
+            width:100%;
+        }
+        .col1 {
+            float:left;
+            width: 50%;
+        }
+        .col2 {
+            float:left;
+            width: 20%;
+        }
+        .col3 {
+            float:right;
+            width:30%;
+            height:100%;
+            overflow:hidden;
         }
     </style>
 </head>
 <body>
-<div align="center" style="margin-top:100px">
-    <table>
-        <tr>
-            <td align="center">
-                <div id="iphone-count">0</div>
-            </td>
-            <td style="padding:0 110px"><i class="fa fa-twitter"></i></td>
-            <td align="center">
-                <div id="android-count">0</div>
-            </td>
-        </tr>
-        <tr>
-            <td align="center">
-                <div>iPhone</div>
-            </td>
-            <td style="padding:0 110px">&nbsp;</td>
-            <td>
-                <div>Android</div>
-            </td>
-        </tr>
-    </table>
-</div>
+    <div class="page">
+        <div class="col1" id="map"></div>
+        <div class="col2">Top Topics</div>
+        <div class="col3" id="stream"></div>
+    </div>
 
-<script>
-setInterval(function() {
-  $.getJSON("total", function(data) {
-    $.each(data, function(key, val) {
-      $.each(val, function(os, mentions) {
-        $("#"+os+"-count").text(mentions.toString());
-      });
-    });
-  });
-}, 2000);
-</script>
+    <script>
+    $(function () {
+        $.getJSON('/countries', function (data) {
 
+            var mapData = Highcharts.geojson(Highcharts.maps['custom/world']);
+
+            $('#map').highcharts('Map', {
+                chart : {
+                    borderWidth : 1
+                },
+
+                title: {
+                    text: 'Real-time Meetup Attendees by Country'
+                },
+
+                legend: {
+                    title: {
+                        text: 'Attendees',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                        }
+                    }
+                },
+
+                mapNavigation: {
+                    enabled: true,
+                    buttonOptions: {
+                        verticalAlign: 'bottom'
+                    }
+                },
+
+                colorAxis: {
+                    min: 1,
+                    max: 3000,
+                    type: 'logarithmic'
+                },
+
+                series : [{
+                    data : data,
+                    mapData: mapData,
+                    joinBy: ['iso-a2', 'code'],
+                    name: 'Attendees',
+                    states: {
+                        hover: {
+                            color: '#BADA55'
+                        }
+                    },
+                    tooltip: {
+                        pointFormat: '{point.code}: {point.value}'
+                    }
+                }]
+                });
+            });
+        });
+
+    setInterval(function() {
+        $.getJSON('/countries', function(data) {
+            var chart = $('#map').highcharts();
+            chart.series[0].setData(data, true, true, true);
+        });
+    }, 2000);
+    </script>
+
+    <script type="text/javascript">
+        must.Rsvps(function(rsvp) {
+            if(rsvp.response == "yes") {
+                $("#stream").prepend( [
+                '<div>'
+                    , rsvp.group.group_country.toUpperCase() , ': '
+                    , rsvp.group.group_name , '<div class="person">'
+                    , rsvp.member.member_name
+                    , '</div></div>'
+                ].join(''));
+            }
+        });
+    </script>
 </body>
 </html>
