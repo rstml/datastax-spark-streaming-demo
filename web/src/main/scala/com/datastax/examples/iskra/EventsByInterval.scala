@@ -38,9 +38,9 @@ object Event extends EventRecord
   val cluster = Cluster.builder().addContactPoint("127.0.0.1").build()
   implicit val session = cluster.connect("iskra")
 
-  def hourly(hashtag: String): Future[Seq[(String, Long)]] = {
-    select (_.interval, _.subtotal) where (_.event eqs hashtag) and (_.interval gte "M") and (_.interval lt "N") limit 60 fetch
-  }
+//  def hourly(hashtag: String): Future[Seq[(String, Long)]] = {
+//    select (_.interval, _.subtotal) where (_.event eqs hashtag) and (_.interval gte "M") and (_.interval lt "N") limit 60 fetch
+//  }
 
   def dimensions(event: String, interval: String): Future[Seq[(String, Long)]] = {
     select (_.dimension, _.subtotal) where (_.event eqs event) and (_.interval eqs interval) limit 500 fetch

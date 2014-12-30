@@ -15,15 +15,21 @@ import org.apache.spark.{SparkConf, SparkContext}
  * 
  * You should output sequences similar to:
  * {{{
- *  event     | interval | dimension | subtotal
- * -----------+----------+-----------+---------
- *  attending |      ALL |        ae |       1
- *  attending |      ALL |        au |      51
- *  attending |      ALL |        ca |      52
- *  attending |      ALL |        de |       2
- *  attending |      ALL |        es |       6
- *  attending |      ALL |        gb |      37
- *  attending |      ALL |        us |     941
+ *  event     | interval        | dimension         | subtotal
+ * -----------+-----------------+-------------------+---------
+ *  attending |             ALL |                ae |       1
+ *  attending |             ALL |                au |      51
+ *  attending |             ALL |                ca |      52
+ *  attending |             ALL |                de |       2
+ *  attending |             ALL |                es |       6
+ *  attending |             ALL |                gb |      37
+ *  attending |             ALL |                us |     941
+ *  ...
+ *   trending | S20141230011335 |  Self-Improvement |       8
+ *   trending | S20141230011335 |           Singles |      14
+ *   trending | S20141230011335 |            Social |      31
+ *   trending | S20141230011335 | Social Networking |      22
+ *  ...
  * }}}
  */
 object StreamingApp {

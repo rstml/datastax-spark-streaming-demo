@@ -2,21 +2,22 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Counter</title>
+    <title>Meetup.com Attendee Stats</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="http://code.highcharts.com/maps/highmaps.js"></script>
     <script src="http://code.highcharts.com/maps/modules/data.js"></script>
     <script src="http://code.highcharts.com/mapdata/custom/world.js"></script>
-    <script type="text/javascript" src="http://meetup.github.io/stream/components/must/must.js"></script>
+    <script src="http://meetup.github.io/stream/components/must/must.js"></script>
 
     <link href='http://fonts.googleapis.com/css?family=Doppio+One' rel='stylesheet' type='text/css'>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//cloud.github.com/downloads/lafeber/world-flags-sprite/flags32.css" rel="stylesheet" type="text/css">
 
     <style>
         body {
             font-family: 'Doppio One', sans-serif;
-            font-size:16pt;
+            font-size:15pt;
             color:#000;
             margin:0;
             height: 100%;
@@ -27,7 +28,10 @@
             margin-bottom:10px;
         }
         #map {
-            height: 800px; min-width: 700px; max-width: 1000px; margin: 0 auto;
+            height: 800px; margin: 0 auto;
+        }
+        #trending {
+            padding: 0 40px 0 5px;
         }
         .page {
             float:left;
@@ -48,13 +52,32 @@
             height:100%;
             overflow:hidden;
         }
+        .title {
+            text-align: center;
+            padding: 5px 0 10px 0;
+            font-size: 22px;
+        }
+        .col1 .title { background: #7C9ED3; }
+        .col2 .title { background: #E9ECDD; }
+        .col3 .title { background: #C0BFC0; }
+        .f32 .flag { margin-right: 10px; float:left; }
+        li .badge { float:right; }
     </style>
 </head>
 <body>
     <div class="page">
-        <div class="col1" id="map"></div>
-        <div class="col2">Top Topics</div>
-        <div class="col3" id="stream"></div>
+        <div class="col1">
+            <div class="title">Total Attendees (all time)</div>
+            <div id="map"></div>
+        </div>
+        <div class="col2">
+            <div class="title">Trending Topics (5 min)</div>
+            <div id="trending"><div style="text-align:center;margin-top:30px;">Waiting...</div></div>
+        </div>
+        <div class="col3">
+            <div class="title">RSVP Accept (Live)</div>
+            <div id="stream"><div style="text-align:center;margin-top:30px;">Streaming...</div></div>
+        </div>
     </div>
 
     <script>
@@ -65,11 +88,11 @@
 
             $('#map').highcharts('Map', {
                 chart : {
-                    borderWidth : 1
+                    borderWidth : 0
                 },
 
-                title: {
-                    text: 'Real-time Meetup Attendees by Country'
+                title : {
+                    text: null
                 },
 
                 legend: {
@@ -108,30 +131,37 @@
                         pointFormat: '{point.code}: {point.value}'
                     }
                 }]
-                });
             });
         });
+    });
 
+    // update map data and trending topics every 5 seconds
     setInterval(function() {
         $.getJSON('/countries', function(data) {
             var chart = $('#map').highcharts();
             chart.series[0].setData(data, true, true, true);
         });
-    }, 2000);
-    </script>
 
-    <script type="text/javascript">
-        must.Rsvps(function(rsvp) {
-            if(rsvp.response == "yes") {
-                $("#stream").prepend( [
-                '<div>'
-                    , rsvp.group.group_country.toUpperCase() , ': '
-                    , rsvp.group.group_name , '<div class="person">'
-                    , rsvp.member.member_name
-                    , '</div></div>'
-                ].join(''));
-            }
+        $.getJSON('/trending', function(trends) {
+            list = $("<ol>");
+            $.each(trends, function(i, trend) {
+                topic = Object.keys(trend)[0]
+                list.append($("<li>").html(topic + ' <span class="badge">' + trend[topic] + '</span>'));
+            });
+            $("#trending").html(list);
         });
+    }, 5000);
+
+    must.Rsvps(function(rsvp) {
+        if(rsvp.response == "yes") {
+            $("#stream").prepend( [
+            '<div class="f32"><span class="flag ', rsvp.group.group_country, '">&nbsp;</span>'
+                , rsvp.group.group_name , '<div class="person">'
+                , rsvp.member.member_name
+                , '</div></div>'
+            ].join(''));
+        }
+    });
     </script>
 </body>
 </html>

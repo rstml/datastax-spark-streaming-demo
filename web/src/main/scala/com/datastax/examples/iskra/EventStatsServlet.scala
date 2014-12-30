@@ -1,11 +1,11 @@
 package com.datastax.examples.iskra
 
+import org.joda.time.{DateTimeZone, DateTime, Duration}
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.{CorsSupport, ScalatraServlet}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 
@@ -21,18 +21,15 @@ class EventStatsServlet() extends ScalatraServlet with CorsSupport with JacksonJ
     response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
   }
 
-  get("/events") {
-    val hashtagStats = for {
-      iphone <- Event.hourly("iphone")
-      android <- Event.hourly("android")
-    } yield (iphone, android)
+  get("/trending") {
+    val time = new DateTime(DateTimeZone.UTC)
 
-    val stats = Await.result(hashtagStats, 5 seconds)
+    // Scan 5 second intervals within the past 1 minute.
+    // Stop as soon as first successful found.
+    val result = (for (i <- Stream range (0,12); v = getTrendingTopics(i, time); if v.nonEmpty) yield v).headOption
 
-    Map(
-      "iphone" -> stats._1.map{ case (i,m) => (i.stripPrefix("M"), m)},
-      "android" -> stats._2.map{ case (i,m) => (i.stripPrefix("M"), m)}
-    )
+    // Order topics by count in desc order and take top 20
+    result.map(r => r.toIndexedSeq.sortBy(_._2).reverse.take(20))
   }
 
   get("/countries") {
@@ -47,4 +44,13 @@ class EventStatsServlet() extends ScalatraServlet with CorsSupport with JacksonJ
     layoutTemplate("dashboard.ssp")
   }
 
+  def roundDateTime(t: DateTime, d: Duration) = {
+    t minus (t.getMillis - (t.getMillis.toDouble / d.getMillis).round * d.getMillis)
+  }
+
+  def getTrendingTopics(i:Int, time:DateTime) = {
+    val t = roundDateTime(time minusSeconds 5*i, Duration.standardSeconds(5))
+    val trendingTopics = Event.dimensions("trending", "S" + t.toString("yyyyMMddHHmmss"))
+    Await.result(trendingTopics, 5 seconds)
+  }
 }
