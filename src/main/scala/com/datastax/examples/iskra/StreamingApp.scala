@@ -11,7 +11,7 @@ import org.apache.spark.{SparkConf, SparkContext}
  * -Dspark.cores.max, default configured is 2
  *
  * Verify data persisted after running in cqlsh with:
- * cqlsh> select * from twitter_stream.hashtags_by_interval;
+ * cqlsh> SELECT * FROM iskra.events_by_interval;
  * 
  * You should output sequences similar to:
  * {{{
@@ -59,7 +59,7 @@ object StreamingApp {
   /** Creates the keyspace and table schema. */
   def createSchema(): Unit = {
     CassandraConnector(conf).withSessionDo { session =>
-      //session.execute(s"DROP KEYSPACE IF EXISTS $CassandraKeyspace")
+      session.execute(s"DROP KEYSPACE IF EXISTS $CassandraKeyspace")
       session.execute(s"CREATE KEYSPACE IF NOT EXISTS $CassandraKeyspace WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1 }")
       session.execute(s"""
              CREATE TABLE IF NOT EXISTS $CassandraKeyspace.$CassandraTable (
@@ -67,8 +67,8 @@ object StreamingApp {
                 interval text,
                 dimension text,
                 subtotal counter,
-                PRIMARY KEY(event, interval, dimension)
-            ) WITH CLUSTERING ORDER BY (interval DESC, dimension ASC)
+                PRIMARY KEY((event, interval), dimension)
+            ) WITH CLUSTERING ORDER BY (dimension ASC)
            """)
     }
   }

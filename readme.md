@@ -1,57 +1,44 @@
-This is a demo app which reads Tweets from Twitter Streaming API and stores hashtags in Cassandra grouped by day, hour and total count.
+This is a demo app which processes Meetup.com RSVPs and stores in Cassandra:
+ 1. Number of attendees per country
+ 2. Trending Meetup Topics
 
-To setup Twitter credentials follow [this guide](http://ampcamp.berkeley.edu/big-data-mini-course/realtime-processing-with-spark-streaming.html) and then update [TwitterCredentials.scala](src/main/scala/com/datastax/examples/iskra/TwitterCredentials.scala#L8-L11) 
-
-Cassandra
----------
-
-In Cassandra add table:
-```sql
-CREATE KEYSPACE iskra WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
-
-CREATE TABLE iskra.hashtags_by_interval (
-    hashtag text,
-    interval text,
-    mentions counter,
-    PRIMARY KEY(hashtag, interval)
-) WITH CLUSTERING ORDER BY (interval DESC);
-```
+This app also provides web dashboard for visualisation of the results.
 
 Stream Processing
 -----------------
 
-Start application locally:
+To start stream processing locally:
 
 ```
+git clone git@github.com:rstml/iskra.git
+cd iskra
 sbt assembly run
 ```
 
 To deploy Spark application on DSE cluster:
 
 ```
-export SPARK_CLIENT_CLASSPATH=~/iskra/target/scala-2.10/iskra-assembly-1.0.jar
-cd ~/iskra/
-nohup dse spark-class com.datastax.examples.iskra.TwitterMonitor > stream.log &
+dse spark-submit target/scala-2.10/iskra.jar
 ```
 
 Web Dashboard
 -------------
 
-Start web applicaiton:
+To start web applicaiton:
 ```
 cd web
 ./sbt
 > container:start
 ```
 
-Point your browser to http://localhost:8080/dashboard and watch counters updated in real time!
+Point your browser to http://localhost:8080/ and watch map and topics update in real time.
 
 Other endpoints:
 
- * http://localhost:8080/total for total stats
- * http://localhost:8080/daily for daily stats
+ * http://localhost:8080/countries - attendees by country since start
+ * http://localhost:8080/trending  - trending topics within last 5 minutes
  
-To deploy app to servlet container create war file using command below and deploy to the server:
+To deploy app to a servlet container, create war package using command below:
 ```
 cd web
 ./sbt
