@@ -15,10 +15,10 @@ cd iskra
 sbt assembly run
 ```
 
-To deploy Spark application on DSE cluster:
+To deploy Spark application on DSE 4.6 cluster:
 
 ```
-dse spark-submit target/scala-2.10/iskra.jar
+dse spark-submit --class com.datastax.examples.iskra.StreamingApp ./target/scala-2.10/iskra.jar -Dspark.cassandra.connection.host=127.0.0.1 
 ```
 
 Web Dashboard
