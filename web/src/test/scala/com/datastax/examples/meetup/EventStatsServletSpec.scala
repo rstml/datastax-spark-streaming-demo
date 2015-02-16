@@ -1,4 +1,4 @@
-package com.datastax.examples.iskra
+package com.datastax.examples.meetup
 
 import org.scalatra.test.specs2._
 

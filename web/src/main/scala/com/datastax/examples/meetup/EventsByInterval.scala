@@ -1,4 +1,4 @@
-package com.datastax.examples.iskra
+package com.datastax.examples.meetup
 
 import com.datastax.driver.core.{Cluster, Session, Row}
 import com.websudos.phantom.CassandraTable
@@ -35,8 +35,9 @@ sealed class EventRecord extends CassandraTable[EventRecord, EventModel]
 
 object Event extends EventRecord
 {
+  val keyspace = "demo"
   val cluster = Cluster.builder().addContactPoint("127.0.0.1").build()
-  implicit val session = cluster.connect("iskra")
+  implicit val session = cluster.connect(keyspace)
 
 //  def hourly(hashtag: String): Future[Seq[(String, Long)]] = {
 //    select (_.interval, _.subtotal) where (_.event eqs hashtag) and (_.interval gte "M") and (_.interval lt "N") limit 60 fetch

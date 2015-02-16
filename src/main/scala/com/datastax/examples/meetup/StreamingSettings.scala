@@ -1,4 +1,4 @@
-package com.datastax.examples.iskra
+package com.datastax.examples.meetup
 
 import scala.sys.process._
 import akka.japi.Util.immutableSeq
@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 
 final class StreamingSettings {
 
-  protected val config = ConfigFactory.load.getConfig("streaming-app")
+  protected val config = ConfigFactory.load.getConfig("streaming-demo")
 
   val MeetupRSVPWebSocketUrl = config.getString("meetup.ws.url")
 

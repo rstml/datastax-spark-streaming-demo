@@ -1,28 +1,36 @@
-This is a demo app which processes Meetup.com RSVPs and stores in Cassandra:
- 1. Number of attendees per country
- 2. Trending Meetup Topics
+This demo processes Meetup.com RSVP stream and stores results in Cassandra. The main purpose of this application is to demonstrate Spark Streaming capabilities in [Spark Cassandra Connector](https://github.com/datastax/spark-cassandra-connector) and DSE.
 
-This app also provides web dashboard for visualisation of the results.
+It produces two types of results:
+ 1. Total number of attendees per country (since application start). Refreshed every 5 seconds. Shows simple stream processing functionality.
+ 2. Trending meetup topics within the last 5 minutes. Refreshed every 10 seconds. Shows windowed transformations functionality.
 
-Stream Processing
------------------
+Web dashboard is included for visualisation of these results:
+
+![Screenshot](/screenshot.png?raw=true)
+
+## Stream Processing
 
 To start stream processing locally:
 
 ```
-git clone git@github.com:rstml/iskra.git
-cd iskra
+git clone git@github.com:rstml/datastax-spark-streaming-demo.git
+cd datastax-spark-streaming-demo
 sbt assembly run
 ```
 
-To deploy Spark application on DSE 4.6 cluster:
+To deploy Spark application on DSE cluster:
 
 ```
-dse spark-submit --class com.datastax.examples.iskra.StreamingApp ./target/scala-2.10/iskra.jar -Dspark.cassandra.connection.host=127.0.0.1 
+dse spark-submit --class com.datastax.examples.meetup.StreamingDemo ./target/scala-2.10/streaming-demo.jar -Dspark.cassandra.connection.host=127.0.0.1
 ```
 
-Web Dashboard
--------------
+Input options:
+* -Dspark.master - Autodetect in DSE. Specify for non-DSE deployments.
+* -Dspark.cassandra.connection.host - Default is 127.0.0.1, replace with rpc_address of one of the nodes.
+* -Dspark.cores.max - Default configured is 2
+* see resources/applicaiton.conf for more
+
+## Web Dashboard
 
 To start web applicaiton:
 ```
@@ -31,12 +39,12 @@ cd web
 > container:start
 ```
 
-Point your browser to http://localhost:8080/ and watch map and topics update in real time.
+Point your browser to [localhost:8080](http://localhost:8080/) and watch map and topics update in real time.
 
 Other endpoints:
 
- * http://localhost:8080/countries - attendees by country since start
- * http://localhost:8080/trending  - trending topics within last 5 minutes
+ * [/countries](http://localhost:8080/countries) - attendees by country since start
+ * [/trending](http://localhost:8080/trending)  - trending topics within last 5 minutes
  
 To deploy app to a servlet container, create war package using command below:
 ```
@@ -45,7 +53,6 @@ cd web
 > package
 ```
 
-Iskra?
-------
+## License
 
-Iskra means Spark in Russian and it was the name of [IBM XT Soviet clone](http://en.wikipedia.org/wiki/Iskra-1030).
+This software is available under the [Apache License, Version 2.0](LICENSE.txt).

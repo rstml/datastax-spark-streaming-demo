@@ -5,15 +5,15 @@ import org.scalatra.sbt.PluginKeys._
 import com.mojolly.scalate.ScalatePlugin._
 import ScalateKeys._
 
-object IskraWebBuild extends Build {
+object DemoDashboardBuild extends Build {
   val Organization = "com.datastax"
-  val Name = "Iskra Web"
+  val Name = "DataStax Spark Streaming Demo Dashboard"
   val Version = "0.1.0-SNAPSHOT"
   val ScalaVersion = "2.10.4"
   val ScalatraVersion = "2.3.0"
 
   lazy val project = Project (
-    "iskra",
+    "demo-dashboard",
     file("."),
     settings = ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       organization := Organization,

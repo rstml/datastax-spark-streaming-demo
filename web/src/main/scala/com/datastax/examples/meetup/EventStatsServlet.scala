@@ -1,4 +1,4 @@
-package com.datastax.examples.iskra
+package com.datastax.examples.meetup
 
 import org.joda.time.{DateTimeZone, DateTime, Duration}
 import org.scalatra.scalate.ScalateSupport

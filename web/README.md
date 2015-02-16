@@ -1,5 +1,3 @@
-# Iskra Web #
-
 ## Build & Run ##
 
 ```sh

@@ -1,6 +1,6 @@
-package com.datastax.examples.iskra.websocket
+package com.datastax.examples.meetup.websocket
 
-import com.datastax.examples.iskra.model._
+import com.datastax.examples.meetup.model._
 import org.apache.spark.storage.StorageLevel
 import scalawebsocket.WebSocket
 import org.apache.spark.streaming.receiver.Receiver

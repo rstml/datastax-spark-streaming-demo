@@ -18,10 +18,10 @@
 import sbt._
 import sbt.Keys._
 
-object IskraBuild extends Build {
+object StreamingDemoBuild extends Build {
   import Settings._
 
-  val iskra = (project in file(".")).settings(defaultSettings: _*).settings(libraryDependencies ++= Dependencies.iskra)
+  val streamingDemo = (project in file(".")).settings(defaultSettings: _*).settings(libraryDependencies ++= Dependencies.streamingDemo)
 }
 
 object Dependencies {
@@ -40,7 +40,7 @@ object Dependencies {
 
   import Compile._
 
-  val iskra = Seq(cassandraThrift, cassandraClient, cassandraDriver, sparkCassandra, slf4jApi, sparkCore, sparkStreaming, websockets)
+  val streamingDemo = Seq(cassandraThrift, cassandraClient, cassandraDriver, sparkCassandra, slf4jApi, sparkCore, sparkStreaming, websockets)
 }
 
 object Settings extends Build {
@@ -56,7 +56,7 @@ object Settings extends Build {
 
   val defaultSettings = Seq(
     updateOptions := updateOptions.value.withCachedResolution(true),
-    assemblyJarName in assembly := "iskra.jar",
+    assemblyJarName in assembly := "streaming-demo.jar",
     assemblyExcludedJars in assembly := {
       val cp = (fullClasspath in assembly).value
       cp filter {_.data.getName.endsWith("sources.jar")}

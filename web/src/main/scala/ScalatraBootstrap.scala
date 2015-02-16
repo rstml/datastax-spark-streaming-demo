@@ -1,4 +1,4 @@
-import com.datastax.examples.iskra._
+import com.datastax.examples.meetup._
 import org.scalatra._
 import javax.servlet.ServletContext
 

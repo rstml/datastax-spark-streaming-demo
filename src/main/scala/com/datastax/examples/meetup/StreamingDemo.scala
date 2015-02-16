@@ -1,4 +1,4 @@
-package com.datastax.examples.iskra
+package com.datastax.examples.meetup
 
 import com.datastax.spark.connector.cql.CassandraConnector
 import org.apache.spark.streaming.{Seconds, StreamingContext}
@@ -11,7 +11,7 @@ import org.apache.spark.{SparkConf, SparkContext}
  * -Dspark.cores.max, default configured is 2
  *
  * Verify data persisted after running in cqlsh with:
- * cqlsh> SELECT * FROM iskra.events_by_interval;
+ * cqlsh> SELECT * FROM demo.events_by_interval;
  * 
  * You should output sequences similar to:
  * {{{
@@ -32,7 +32,7 @@ import org.apache.spark.{SparkConf, SparkContext}
  *  ...
  * }}}
  */
-object StreamingApp {
+object StreamingDemo {
 
   val settings = new StreamingSettings
   import settings._
@@ -51,7 +51,7 @@ object StreamingApp {
   val ssc = new StreamingContext(sc, Seconds(StreamingBatchInterval))
 
   def main(args: Array[String]): Unit = {
-    //ssc.checkpoint("iskra.dat")
+    //ssc.checkpoint("meetup.dat")
     val stream = new PersistStreamByInterval
     stream.start(ssc, MeetupRSVPWebSocketUrl, CassandraKeyspace, CassandraTable)
   }

@@ -1,4 +1,4 @@
-package com.datastax.examples.iskra.model
+package com.datastax.examples.meetup.model
 
 import org.joda.time.{DateTimeZone, DateTime}
 import org.apache.spark.streaming.Time

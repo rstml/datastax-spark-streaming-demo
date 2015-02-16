@@ -1,8 +1,8 @@
-package com.datastax.examples.iskra
+package com.datastax.examples.meetup
 
-import com.datastax.examples.iskra.model.MeetupRsvp
-import com.datastax.examples.iskra.model.EventInterval
-import com.datastax.examples.iskra.websocket._
+import com.datastax.examples.meetup.model.MeetupRsvp
+import com.datastax.examples.meetup.model.EventInterval
+import com.datastax.examples.meetup.websocket._
 import com.datastax.spark.connector._
 import com.datastax.spark.connector.streaming._
 import org.apache.spark.storage.StorageLevel

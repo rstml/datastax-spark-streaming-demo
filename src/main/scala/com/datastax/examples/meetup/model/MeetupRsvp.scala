@@ -1,4 +1,4 @@
-package com.datastax.examples.iskra.model
+package com.datastax.examples.meetup.model
 
 /**
  * Created by rustam on 21/12/2014.
